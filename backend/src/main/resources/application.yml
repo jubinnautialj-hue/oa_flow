@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 5188
   servlet:
     context-path: /api
 
@@ -7,7 +7,7 @@ spring:
   application:
     name: oa-flow-backend
   datasource:
-    url: jdbc:mysql://localhost:3306/oa_flow?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/oa_flow?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,11 +23,16 @@ spring:
 flowable:
   async-executor-activate: true
   database-schema-update: true
+  db-history-used: true
+  history-level: audit
   idm-engine:
     enabled: false
-  rest:
-    app:
-      name: Flowable REST API
+  form-engine:
+    enabled: false
+  dmn-engine:
+    enabled: false
+  content-engine:
+    enabled: false
 
 jwt:
   secret: oa-flow-secret-key-2024-very-long-secret-key-for-jwt-token-generation
@@ -35,5 +40,6 @@ jwt:
 
 logging:
   level:
-    org.flowable: INFO
+    org.flowable: DEBUG
+    org.flowable.spring: DEBUG
     com.oa: DEBUG
