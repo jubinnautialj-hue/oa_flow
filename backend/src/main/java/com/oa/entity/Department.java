@@ -1,5 +1,6 @@
 package com.oa.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,6 +25,7 @@ public class Department {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
+    @JsonIgnore
     private Department parent;
 
     @OneToMany(mappedBy = "parent")
