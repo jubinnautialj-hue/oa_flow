@@ -59,7 +59,7 @@ import request from '@/utils/request'
 
 const router = useRouter()
 const definitions = ref([])
-const deployings = ref(false)
+const deploying = ref(false)
 const deployForm = reactive({
   name: '',
   xml: ''
@@ -76,7 +76,7 @@ const sampleProcessXml = `<?xml version="1.0" encoding="UTF-8"?>
       <outgoing>flow1</outgoing>
     </startEvent>
     
-    <userTask id="manager_approve" name="部门经理审批" flowable:assignee="${initiator}">
+    <userTask id="manager_approve" name="部门经理审批" flowable:assignee="\${initiator}">
       <incoming>flow1</incoming>
       <outgoing>flow2</outgoing>
     </userTask>
@@ -97,7 +97,13 @@ const sampleProcessXml = `<?xml version="1.0" encoding="UTF-8"?>
 </definitions>`
 
 const loadDefinitions = async () => {
-  definitions.value = await request.get('/process/definitions')
+  try {
+    const res = await request.get('/process/definitions')
+    definitions.value = res || []
+  } catch (error) {
+    console.error('加载流程定义失败:', error)
+    definitions.value = []
+  }
 }
 
 const loadSample = () => {
@@ -126,7 +132,7 @@ const deployProcess = async () => {
     ElMessage.warning('请输入BPMN XML')
     return
   }
-  deployings.value = true
+  deploying.value = true
   try {
     const result = await request.post('/process/deploy/xml', {
       bpmnXml: deployForm.xml,
@@ -137,7 +143,7 @@ const deployProcess = async () => {
       loadDefinitions()
     }
   } finally {
-    deployings.value = false
+    deploying.value = false
   }
 }
 

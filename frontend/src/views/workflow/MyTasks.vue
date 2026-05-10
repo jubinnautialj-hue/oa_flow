@@ -51,11 +51,23 @@ const todoTasks = ref([])
 const candidateTasks = ref([])
 
 const loadTodoTasks = async () => {
-  todoTasks.value = await request.get('/task/todo') || []
+  try {
+    const res = await request.get('/task/todo')
+    todoTasks.value = res || []
+  } catch (error) {
+    console.error('加载待办任务失败:', error)
+    todoTasks.value = []
+  }
 }
 
 const loadCandidateTasks = async () => {
-  candidateTasks.value = await request.get('/task/candidate') || []
+  try {
+    const res = await request.get('/task/candidate')
+    candidateTasks.value = res || []
+  } catch (error) {
+    console.error('加载待签收任务失败:', error)
+    candidateTasks.value = []
+  }
 }
 
 const claimTask = async (taskId) => {

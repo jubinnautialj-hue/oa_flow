@@ -40,7 +40,13 @@ import request from '@/utils/request'
 const applications = ref([])
 
 const loadData = async () => {
-  applications.value = await request.get('/task/history/processes') || []
+  try {
+    const res = await request.get('/task/history/processes')
+    applications.value = res || []
+  } catch (error) {
+    console.error('加载我的申请失败:', error)
+    applications.value = []
+  }
 }
 
 const viewDetail = (row) => {

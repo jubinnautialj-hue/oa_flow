@@ -1,5 +1,7 @@
 package com.oa.service;
 
+import com.oa.dto.DeploymentDTO;
+import com.oa.dto.ProcessDefinitionDTO;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.repository.Deployment;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ProcessService {
@@ -22,11 +25,13 @@ public class ProcessService {
     @Autowired
     private RuntimeService runtimeService;
 
-    public List<ProcessDefinition> getProcessDefinitions() {
+    public List<ProcessDefinitionDTO> getProcessDefinitions() {
         ProcessDefinitionQuery query = repositoryService.createProcessDefinitionQuery()
                 .latestVersion()
                 .orderByProcessDefinitionName().asc();
-        return query.list();
+        return query.list().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -60,15 +65,39 @@ public class ProcessService {
         repositoryService.deleteDeployment(deploymentId, true);
     }
 
-    public ProcessDefinition getProcessDefinitionById(String processDefinitionId) {
-        return repositoryService.createProcessDefinitionQuery()
+    public ProcessDefinitionDTO getProcessDefinitionById(String processDefinitionId) {
+        ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionId(processDefinitionId)
                 .singleResult();
+        return pd != null ? convertToDTO(pd) : null;
     }
 
-    public List<Deployment> getDeployments() {
+    public List<DeploymentDTO> getDeployments() {
         return repositoryService.createDeploymentQuery()
                 .orderByDeploymentTime().desc()
-                .list();
+                .list().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private ProcessDefinitionDTO convertToDTO(ProcessDefinition pd) {
+        ProcessDefinitionDTO dto = new ProcessDefinitionDTO();
+        dto.setId(pd.getId());
+        dto.setName(pd.getName());
+        dto.setKey(pd.getKey());
+        dto.setVersion(pd.getVersion());
+        dto.setDeploymentId(pd.getDeploymentId());
+        dto.setDescription(pd.getDescription());
+        return dto;
+    }
+
+    private DeploymentDTO convertToDTO(Deployment deployment) {
+        DeploymentDTO dto = new DeploymentDTO();
+        dto.setId(deployment.getId());
+        dto.setName(deployment.getName());
+        dto.setDeploymentTime(deployment.getDeploymentTime());
+        dto.setCategory(deployment.getCategory());
+        dto.setTenantId(deployment.getTenantId());
+        return dto;
     }
 }

@@ -1,11 +1,12 @@
 package com.oa.controller;
 
+import com.oa.dto.DeploymentDTO;
+import com.oa.dto.ProcessDefinitionDTO;
 import com.oa.dto.StartProcessDTO;
 import com.oa.entity.User;
 import com.oa.service.ProcessService;
 import com.oa.service.UserService;
 import org.flowable.engine.repository.Deployment;
-import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +26,12 @@ public class ProcessController {
     private UserService userService;
 
     @GetMapping("/definitions")
-    public ResponseEntity<List<ProcessDefinition>> getProcessDefinitions() {
+    public ResponseEntity<List<ProcessDefinitionDTO>> getProcessDefinitions() {
         return ResponseEntity.ok(processService.getProcessDefinitions());
     }
 
     @GetMapping("/deployments")
-    public ResponseEntity<List<Deployment>> getDeployments() {
+    public ResponseEntity<List<DeploymentDTO>> getDeployments() {
         return ResponseEntity.ok(processService.getDeployments());
     }
 
@@ -120,8 +121,8 @@ public class ProcessController {
     }
 
     @GetMapping("/definitions/{processDefinitionId}")
-    public ResponseEntity<ProcessDefinition> getProcessDefinitionById(@PathVariable String processDefinitionId) {
-        ProcessDefinition pd = processService.getProcessDefinitionById(processDefinitionId);
+    public ResponseEntity<ProcessDefinitionDTO> getProcessDefinitionById(@PathVariable String processDefinitionId) {
+        ProcessDefinitionDTO pd = processService.getProcessDefinitionById(processDefinitionId);
         if (pd == null) {
             return ResponseEntity.notFound().build();
         }
