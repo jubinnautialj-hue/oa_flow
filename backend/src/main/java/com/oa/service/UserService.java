@@ -157,4 +157,24 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+    @Transactional
+    public void changePasswordByAdmin(Long userId, String newPassword) {
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new RuntimeException("密码长度不能少于6位");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    public boolean isCurrentUserAdmin() {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return false;
+        }
+        return currentUser.getRoles().stream()
+                .anyMatch(role -> "ROLE_ADMIN".equals(role.getCode()) || "超级管理员".equals(role.getName()));
+    }
 }

@@ -72,4 +72,26 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<?> changePasswordByAdmin(@PathVariable Long id, @RequestBody Map<String, String> params) {
+        try {
+            if (!userService.isCurrentUserAdmin()) {
+                return ResponseEntity.status(403).body("没有权限执行此操作");
+            }
+            String newPassword = params.get("newPassword");
+            if (newPassword == null) {
+                return ResponseEntity.badRequest().body("参数不完整");
+            }
+            userService.changePasswordByAdmin(id, newPassword);
+            return ResponseEntity.ok("密码修改成功");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/current/is-admin")
+    public ResponseEntity<Boolean> isCurrentUserAdmin() {
+        return ResponseEntity.ok(userService.isCurrentUserAdmin());
+    }
 }

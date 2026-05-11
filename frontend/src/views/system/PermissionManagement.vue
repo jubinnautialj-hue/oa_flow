@@ -2,7 +2,18 @@
   <div class="permission-management">
     <el-card>
       <div class="toolbar">
-        <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>新增权限</el-button>
+        <el-form :inline="true" :model="searchForm">
+          <el-form-item label="关键字">
+            <el-input v-model="searchForm.keyword" placeholder="搜索权限编码/名称" clearable @keyup.enter="handleSearch" style="width: 240px">
+              <template #append>
+                <el-button icon="Search" @click="handleSearch"></el-button>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>新增权限</el-button>
+          </el-form-item>
+        </el-form>
       </div>
       <el-table :data="permissionList" border style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
@@ -60,6 +71,11 @@ const permissionList = ref([])
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const formRef = ref()
+
+const searchForm = reactive({
+  keyword: ''
+})
+
 const form = reactive({
   id: null,
   code: '',
@@ -74,7 +90,12 @@ const rules = {
 }
 
 const loadData = async () => {
-  permissionList.value = await request.get('/permissions')
+  const params = searchForm.keyword ? { keyword: searchForm.keyword } : {}
+  permissionList.value = await request.get('/permissions', { params })
+}
+
+const handleSearch = () => {
+  loadData()
 }
 
 const handleAdd = () => {

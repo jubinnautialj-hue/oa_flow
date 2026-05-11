@@ -1,11 +1,13 @@
 <template>
   <el-container class="layout-container">
-    <el-aside width="220px" class="sidebar">
+    <el-aside :width="sidebarWidth" class="sidebar" :class="{ collapsed: isCollapsed }">
       <div class="logo">
-        <span>OA流程审批系统</span>
+        <span v-if="!isCollapsed">OA流程审批系统</span>
+        <span v-else>OA</span>
       </div>
       <el-menu
         :default-active="$route.path"
+        :collapse="isCollapsed"
         router
         class="sidebar-menu"
         background-color="#304156"
@@ -14,19 +16,26 @@
       >
         <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path">
           <el-icon><component :is="item.icon" /></el-icon>
-          <span>{{ item.title }}</span>
+          <template #title>
+            <span>{{ item.title }}</span>
+          </template>
         </el-menu-item>
       </el-menu>
     </el-aside>
-    <el-container>
+    <el-container :style="{ marginLeft: sidebarWidth, transition: 'margin-left 0.3s' }">
       <el-header class="header">
         <div class="header-left">
+          <el-icon class="collapse-btn" @click="toggleSidebar">
+            <Fold v-if="!isCollapsed" />
+            <Expand v-else />
+          </el-icon>
           <span class="page-title">{{ currentPageTitle }}</span>
         </div>
         <div class="header-right">
           <el-dropdown @command="handleCommand">
             <span class="user-info">
-              <el-icon><UserFilled /></el-icon>
+              <el-avatar v-if="authStore.userInfo.avatar" :size="32" :src="authStore.userInfo.avatar" />
+              <el-icon v-else><UserFilled /></el-icon>
               <span>{{ authStore.userInfo.name || authStore.userInfo.username }}</span>
               <el-icon><ArrowDown /></el-icon>
             </span>
@@ -47,15 +56,20 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
-import request from '@/utils/request'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+
+const isCollapsed = ref(false)
+
+const sidebarWidth = computed(() => {
+  return isCollapsed.value ? '64px' : '220px'
+})
 
 const menuItems = computed(() => {
   return route.matched[0]?.children?.filter(
@@ -71,6 +85,10 @@ const currentPageTitle = computed(() => {
   return route.meta?.title || '首页'
 })
 
+const toggleSidebar = () => {
+  isCollapsed.value = !isCollapsed.value
+}
+
 const handleCommand = async (command) => {
   if (command === 'logout') {
     try {
@@ -83,7 +101,7 @@ const handleCommand = async (command) => {
       router.push('/login')
     } catch {}
   } else if (command === 'profile') {
-    await request.get('/auth/current')
+    router.push('/profile')
   }
 }
 
@@ -107,6 +125,8 @@ onMounted(async () => {
   top: 0;
   z-index: 1000;
   overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.3s;
 }
 
 .logo {
@@ -118,14 +138,16 @@ onMounted(async () => {
   font-size: 16px;
   font-weight: bold;
   border-bottom: 1px solid #1f2d3d;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar.collapsed .logo {
+  font-size: 18px;
 }
 
 .sidebar-menu {
   border-right: none;
-}
-
-:deep(.layout-container > .el-container) {
-  margin-left: 220px;
 }
 
 .header {
@@ -137,6 +159,26 @@ onMounted(async () => {
   padding: 0 20px;
   height: 60px;
   line-height: 60px;
+  transition: margin-left 0.3s;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.collapse-btn {
+  font-size: 20px;
+  cursor: pointer;
+  color: #606266;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.collapse-btn:hover {
+  background-color: #f5f7fa;
 }
 
 .page-title {

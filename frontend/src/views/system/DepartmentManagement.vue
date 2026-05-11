@@ -2,7 +2,18 @@
   <div class="department-management">
     <el-card>
       <div class="toolbar">
-        <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>新增部门</el-button>
+        <el-form :inline="true" :model="searchForm">
+          <el-form-item label="关键字">
+            <el-input v-model="searchForm.keyword" placeholder="搜索部门名称" clearable @keyup.enter="handleSearch" style="width: 240px">
+              <template #append>
+                <el-button icon="Search" @click="handleSearch"></el-button>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>新增部门</el-button>
+          </el-form-item>
+        </el-form>
       </div>
       <el-table :data="departmentList" border row-key="id" style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
@@ -68,6 +79,11 @@ const departmentList = ref([])
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const formRef = ref()
+
+const searchForm = reactive({
+  keyword: ''
+})
+
 const form = reactive({
   id: null,
   name: '',
@@ -81,7 +97,12 @@ const rules = {
 }
 
 const loadData = async () => {
-  departmentList.value = await request.get('/departments')
+  const params = searchForm.keyword ? { keyword: searchForm.keyword } : {}
+  departmentList.value = await request.get('/departments', { params })
+}
+
+const handleSearch = () => {
+  loadData()
 }
 
 const handleAdd = () => {

@@ -2,7 +2,18 @@
   <div class="user-management">
     <el-card>
       <div class="toolbar">
-        <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>新增用户</el-button>
+        <el-form :inline="true" :model="searchForm">
+          <el-form-item label="关键字">
+            <el-input v-model="searchForm.keyword" placeholder="搜索用户名/姓名/邮箱" clearable @keyup.enter="handleSearch" style="width: 240px">
+              <template #append>
+                <el-button icon="Search" @click="handleSearch"></el-button>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>新增用户</el-button>
+          </el-form-item>
+        </el-form>
       </div>
       <el-table :data="userList" border style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
@@ -26,9 +37,10 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="250">
           <template #default="scope">
             <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button type="success" size="small" @click="handleResetPassword(scope.row)">重置密码</el-button>
             <el-button type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -76,6 +88,24 @@
         <el-button type="primary" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="passwordDialogVisible" title="重置密码" width="500px">
+      <el-form :model="passwordForm" :rules="passwordRules" ref="passwordFormRef" label-width="100px">
+        <el-form-item label="用户名">
+          <el-input :value="passwordForm.username" disabled />
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="passwordForm.newPassword" type="password" placeholder="请输入新密码" show-password />
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword">
+          <el-input v-model="passwordForm.confirmPassword" type="password" placeholder="请再次输入新密码" show-password />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="passwordDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handlePasswordSubmit">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -91,6 +121,13 @@ const positionList = ref([])
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const formRef = ref()
+const passwordDialogVisible = ref(false)
+const passwordFormRef = ref()
+
+const searchForm = reactive({
+  keyword: ''
+})
+
 const form = reactive({
   id: null,
   username: '',
@@ -108,11 +145,42 @@ const rules = {
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
 }
 
+const passwordForm = reactive({
+  userId: null,
+  username: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+
+const validateConfirmPassword = (rule, value, callback) => {
+  if (value !== passwordForm.newPassword) {
+    callback(new Error('两次输入的密码不一致'))
+  } else {
+    callback()
+  }
+}
+
+const passwordRules = {
+  newPassword: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, message: '请再次输入新密码', trigger: 'blur' },
+    { validator: validateConfirmPassword, trigger: 'blur' }
+  ]
+}
+
 const loadData = async () => {
-  userList.value = await request.get('/users')
+  const params = searchForm.keyword ? { keyword: searchForm.keyword } : {}
+  userList.value = await request.get('/users', { params })
   roleList.value = await request.get('/roles')
   departmentList.value = await request.get('/departments')
   positionList.value = await request.get('/positions')
+}
+
+const handleSearch = () => {
+  loadData()
 }
 
 const handleAdd = () => {
@@ -153,6 +221,27 @@ const handleDelete = async (row) => {
     await request.delete(`/users/${row.id}`)
     ElMessage.success('删除成功')
     loadData()
+  } catch {}
+}
+
+const handleResetPassword = (row) => {
+  Object.assign(passwordForm, {
+    userId: row.id,
+    username: row.username,
+    newPassword: '',
+    confirmPassword: ''
+  })
+  passwordDialogVisible.value = true
+}
+
+const handlePasswordSubmit = async () => {
+  try {
+    await passwordFormRef.value.validate()
+    await request.put(`/users/${passwordForm.userId}/password`, {
+      newPassword: passwordForm.newPassword
+    })
+    ElMessage.success('密码重置成功')
+    passwordDialogVisible.value = false
   } catch {}
 }
 

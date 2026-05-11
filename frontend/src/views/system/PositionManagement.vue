@@ -2,7 +2,18 @@
   <div class="position-management">
     <el-card>
       <div class="toolbar">
-        <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>新增岗位</el-button>
+        <el-form :inline="true" :model="searchForm">
+          <el-form-item label="关键字">
+            <el-input v-model="searchForm.keyword" placeholder="搜索岗位名称" clearable @keyup.enter="handleSearch" style="width: 240px">
+              <template #append>
+                <el-button icon="Search" @click="handleSearch"></el-button>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleAdd"><el-icon><Plus /></el-icon>新增岗位</el-button>
+          </el-form-item>
+        </el-form>
       </div>
       <el-table :data="positionList" border style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
@@ -56,6 +67,11 @@ const positionList = ref([])
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const formRef = ref()
+
+const searchForm = reactive({
+  keyword: ''
+})
+
 const form = reactive({
   id: null,
   name: '',
@@ -68,7 +84,12 @@ const rules = {
 }
 
 const loadData = async () => {
-  positionList.value = await request.get('/positions')
+  const params = searchForm.keyword ? { keyword: searchForm.keyword } : {}
+  positionList.value = await request.get('/positions', { params })
+}
+
+const handleSearch = () => {
+  loadData()
 }
 
 const handleAdd = () => {

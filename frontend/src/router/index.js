@@ -85,6 +85,12 @@ const routes = [
         name: 'StartProcess',
         component: () => import('@/views/workflow/StartProcess.vue'),
         meta: { title: '发起流程', icon: 'Promotion', hidden: true }
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/system/Profile.vue'),
+        meta: { title: '个人中心', icon: 'User', hidden: true }
       }
     ]
   }

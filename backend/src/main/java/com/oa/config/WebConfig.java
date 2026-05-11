@@ -6,6 +6,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import jakarta.annotation.PostConstruct;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Configuration
@@ -13,6 +15,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${file.upload.path:uploads}")
     private String uploadPath;
+
+    private Path absoluteUploadPath;
+
+    @PostConstruct
+    public void init() {
+        Path projectRoot = Paths.get(System.getProperty("user.dir"));
+        absoluteUploadPath = projectRoot.resolve(uploadPath).toAbsolutePath().normalize();
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -26,7 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String absolutePath = Paths.get(uploadPath).toAbsolutePath().normalize().toString();
+        String absolutePath = absoluteUploadPath.toString();
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + absolutePath + "/");
     }

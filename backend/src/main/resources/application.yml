@@ -6,6 +6,11 @@ server:
 spring:
   application:
     name: oa-flow-backend
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
   datasource:
     url: jdbc:mysql://localhost:3306/oa_flow?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
     username: root

@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -26,6 +28,14 @@ public class FileUploadController {
 
     @Value("${file.upload.path:uploads}")
     private String uploadPath;
+
+    private Path absoluteUploadPath;
+
+    @PostConstruct
+    public void init() {
+        Path projectRoot = Paths.get(System.getProperty("user.dir"));
+        absoluteUploadPath = projectRoot.resolve(uploadPath).toAbsolutePath().normalize();
+    }
 
     @PostMapping("/avatar")
     public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file) {
@@ -42,14 +52,17 @@ public class FileUploadController {
             }
 
             String datePath = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-            Path uploadDir = Paths.get(uploadPath, "avatar", datePath);
+            Path uploadDir = absoluteUploadPath.resolve("avatar").resolve(datePath);
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
 
             String filename = UUID.randomUUID().toString().replace("-", "") + "." + extension;
             Path targetPath = uploadDir.resolve(filename);
-            file.transferTo(targetPath.toFile());
+            
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
 
             Map<String, Object> result = new HashMap<>();
             result.put("url", "/uploads/avatar/" + datePath + "/" + filename);
@@ -57,6 +70,7 @@ public class FileUploadController {
             
             return ResponseEntity.ok(result);
         } catch (IOException e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("上传失败: " + e.getMessage());
         }
     }
