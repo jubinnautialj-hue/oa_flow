@@ -31,6 +31,9 @@ public class User {
     @Column(length = 20)
     private String phone;
 
+    @Column(length = 255)
+    private String avatar;
+
     @Column(nullable = false)
     private Integer status = 1;
 

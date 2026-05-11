@@ -17,7 +17,10 @@ public class PermissionController {
     private PermissionService permissionService;
 
     @GetMapping
-    public ResponseEntity<List<Permission>> list() {
+    public ResponseEntity<List<Permission>> list(@RequestParam(required = false) String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return ResponseEntity.ok(permissionService.search(keyword));
+        }
         return ResponseEntity.ok(permissionService.findAll());
     }
 

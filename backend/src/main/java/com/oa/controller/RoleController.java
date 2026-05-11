@@ -17,7 +17,10 @@ public class RoleController {
     private RoleService roleService;
 
     @GetMapping
-    public ResponseEntity<List<Role>> list() {
+    public ResponseEntity<List<Role>> list(@RequestParam(required = false) String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return ResponseEntity.ok(roleService.search(keyword));
+        }
         return ResponseEntity.ok(roleService.findAll());
     }
 

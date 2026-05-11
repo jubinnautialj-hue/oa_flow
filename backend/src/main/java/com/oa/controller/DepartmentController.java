@@ -17,7 +17,10 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @GetMapping
-    public ResponseEntity<List<Department>> list() {
+    public ResponseEntity<List<Department>> list(@RequestParam(required = false) String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return ResponseEntity.ok(departmentService.search(keyword));
+        }
         return ResponseEntity.ok(departmentService.findAll());
     }
 

@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,13 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    public List<User> search(String keyword) {
+        if (StringUtils.hasText(keyword)) {
+            return userRepository.search(keyword);
+        }
         return userRepository.findAll();
     }
 
@@ -114,5 +122,39 @@ public class UserService {
     public User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username).orElse(null);
+    }
+
+    @Transactional
+    public User updateCurrentUserProfile(UserDTO dto) {
+        User user = getCurrentUser();
+        if (user == null) {
+            throw new RuntimeException("用户未登录");
+        }
+        if (dto.getName() != null) {
+            user.setName(dto.getName());
+        }
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+        if (dto.getPhone() != null) {
+            user.setPhone(dto.getPhone());
+        }
+        if (dto.getAvatar() != null) {
+            user.setAvatar(dto.getAvatar());
+        }
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void changePassword(String oldPassword, String newPassword) {
+        User user = getCurrentUser();
+        if (user == null) {
+            throw new RuntimeException("用户未登录");
+        }
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("原密码错误");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

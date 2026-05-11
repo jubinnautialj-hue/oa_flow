@@ -20,6 +20,13 @@ public class PositionService {
         return positionRepository.findAll();
     }
 
+    public List<Position> search(String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return positionRepository.search(keyword);
+        }
+        return positionRepository.findAll();
+    }
+
     public Optional<Position> findById(Long id) {
         return positionRepository.findById(id);
     }

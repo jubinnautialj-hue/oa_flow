@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -17,7 +18,10 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> list() {
+    public ResponseEntity<List<User>> list(@RequestParam(required = false) String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return ResponseEntity.ok(userService.search(keyword));
+        }
         return ResponseEntity.ok(userService.findAll());
     }
 
@@ -42,5 +46,30 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody UserDTO dto) {
+        try {
+            User user = userService.updateCurrentUserProfile(dto);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> params) {
+        try {
+            String oldPassword = params.get("oldPassword");
+            String newPassword = params.get("newPassword");
+            if (oldPassword == null || newPassword == null) {
+                return ResponseEntity.badRequest().body("参数不完整");
+            }
+            userService.changePassword(oldPassword, newPassword);
+            return ResponseEntity.ok("密码修改成功");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

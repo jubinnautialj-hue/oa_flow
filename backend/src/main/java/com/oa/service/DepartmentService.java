@@ -20,6 +20,13 @@ public class DepartmentService {
         return departmentRepository.findAll();
     }
 
+    public List<Department> search(String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return departmentRepository.search(keyword);
+        }
+        return departmentRepository.findAll();
+    }
+
     public Optional<Department> findById(Long id) {
         return departmentRepository.findById(id);
     }

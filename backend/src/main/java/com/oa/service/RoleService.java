@@ -8,6 +8,7 @@ import com.oa.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,13 @@ public class RoleService {
     private PermissionRepository permissionRepository;
 
     public List<Role> findAll() {
+        return roleRepository.findAll();
+    }
+
+    public List<Role> search(String keyword) {
+        if (StringUtils.hasText(keyword)) {
+            return roleRepository.search(keyword);
+        }
         return roleRepository.findAll();
     }
 

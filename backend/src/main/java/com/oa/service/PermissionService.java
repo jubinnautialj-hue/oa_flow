@@ -20,6 +20,13 @@ public class PermissionService {
         return permissionRepository.findAll();
     }
 
+    public List<Permission> search(String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return permissionRepository.search(keyword);
+        }
+        return permissionRepository.findAll();
+    }
+
     public Optional<Permission> findById(Long id) {
         return permissionRepository.findById(id);
     }

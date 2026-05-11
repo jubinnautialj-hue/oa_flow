@@ -17,7 +17,10 @@ public class PositionController {
     private PositionService positionService;
 
     @GetMapping
-    public ResponseEntity<List<Position>> list() {
+    public ResponseEntity<List<Position>> list(@RequestParam(required = false) String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return ResponseEntity.ok(positionService.search(keyword));
+        }
         return ResponseEntity.ok(positionService.findAll());
     }
 
