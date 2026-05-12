@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface PermissionRepository extends JpaRepository<Permission, Long> {
     Optional<Permission> findByCode(String code);
     boolean existsByCode(String code);
+    List<Permission> findByType(String type);
 
     @Query("SELECT p FROM Permission p WHERE p.code LIKE %:keyword% OR p.name LIKE %:keyword%")
     List<Permission> search(@Param("keyword") String keyword);

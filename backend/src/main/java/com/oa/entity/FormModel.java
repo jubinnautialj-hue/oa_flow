@@ -7,27 +7,28 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "sys_permission")
-public class Permission {
+@Table(name = "wf_form_model")
+public class FormModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 100)
-    private String code;
-
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(length = 200)
+    @Column(unique = true, nullable = false, length = 100)
+    private String formKey;
+
+    @Column(length = 500)
     private String description;
 
-    @Column(nullable = false, length = 20)
-    private String type = "FUNCTION";
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String formSchema;
 
-    @Column(nullable = false)
-    private Integer status = 1;
+    @Column(name = "create_user_id")
+    private Long createUserId;
 
     @Column(name = "create_time")
     private LocalDateTime createTime;

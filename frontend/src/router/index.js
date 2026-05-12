@@ -21,34 +21,28 @@ const routes = [
         meta: { title: '首页', icon: 'HomeFilled' }
       },
       {
-        path: 'users',
-        name: 'Users',
-        component: () => import('@/views/system/UserManagement.vue'),
-        meta: { title: '用户管理', icon: 'User' }
+        path: 'process-design',
+        name: 'ProcessDesign',
+        component: () => import('@/views/workflow/ProcessDesign.vue'),
+        meta: { title: '流程设计', icon: 'Connection' }
       },
       {
-        path: 'roles',
-        name: 'Roles',
-        component: () => import('@/views/system/RoleManagement.vue'),
-        meta: { title: '角色管理', icon: 'UserFilled' }
+        path: 'process-design/:id',
+        name: 'ProcessDesignerPage',
+        component: () => import('@/views/workflow/ProcessDesigner.vue'),
+        meta: { title: '流程编辑器', icon: 'Connection', hidden: true }
       },
       {
-        path: 'permissions',
-        name: 'Permissions',
-        component: () => import('@/views/system/PermissionManagement.vue'),
-        meta: { title: '权限管理', icon: 'Lock' }
+        path: 'form-design',
+        name: 'FormDesign',
+        component: () => import('@/views/workflow/FormDesign.vue'),
+        meta: { title: '表单设计', icon: 'EditPen' }
       },
       {
-        path: 'departments',
-        name: 'Departments',
-        component: () => import('@/views/system/DepartmentManagement.vue'),
-        meta: { title: '部门管理', icon: 'OfficeBuilding' }
-      },
-      {
-        path: 'positions',
-        name: 'Positions',
-        component: () => import('@/views/system/PositionManagement.vue'),
-        meta: { title: '岗位管理', icon: 'Medal' }
+        path: 'form-design/:id',
+        name: 'FormDesignerPage',
+        component: () => import('@/views/workflow/FormDesigner.vue'),
+        meta: { title: '表单编辑器', icon: 'EditPen', hidden: true }
       },
       {
         path: 'process-definitions',
@@ -60,7 +54,13 @@ const routes = [
         path: 'process-designer',
         name: 'ProcessDesigner',
         component: () => import('@/views/workflow/ProcessDesigner.vue'),
-        meta: { title: '流程设计器', icon: 'Connection' }
+        meta: { title: '流程设计器', icon: 'Connection', hidden: true }
+      },
+      {
+        path: 'deployment-management',
+        name: 'DeploymentManagement',
+        component: () => import('@/views/workflow/DeploymentManagement.vue'),
+        meta: { title: '部署管理', icon: 'UploadFilled' }
       },
       {
         path: 'my-tasks',
@@ -85,6 +85,48 @@ const routes = [
         name: 'StartProcess',
         component: () => import('@/views/workflow/StartProcess.vue'),
         meta: { title: '发起流程', icon: 'Promotion', hidden: true }
+      },
+      {
+        path: 'users',
+        name: 'Users',
+        component: () => import('@/views/system/UserManagement.vue'),
+        meta: { title: '用户管理', icon: 'User' }
+      },
+      {
+        path: 'roles',
+        name: 'Roles',
+        component: () => import('@/views/system/RoleManagement.vue'),
+        meta: { title: '角色管理', icon: 'UserFilled' }
+      },
+      {
+        path: 'menus',
+        name: 'Menus',
+        component: () => import('@/views/system/MenuManagement.vue'),
+        meta: { title: '菜单管理', icon: 'Menu' }
+      },
+      {
+        path: 'button-management',
+        name: 'ButtonManagement',
+        component: () => import('@/views/system/ButtonManagement.vue'),
+        meta: { title: '按钮管理', icon: 'Promotion' }
+      },
+      {
+        path: 'operation-dispatch',
+        name: 'OperationDispatch',
+        component: () => import('@/views/workflow/OperationDispatch.vue'),
+        meta: { title: '运维调度', icon: 'Operation' }
+      },
+      {
+        path: 'departments',
+        name: 'Departments',
+        component: () => import('@/views/system/DepartmentManagement.vue'),
+        meta: { title: '部门管理', icon: 'OfficeBuilding' }
+      },
+      {
+        path: 'positions',
+        name: 'Positions',
+        component: () => import('@/views/system/PositionManagement.vue'),
+        meta: { title: '岗位管理', icon: 'Medal' }
       },
       {
         path: 'profile',

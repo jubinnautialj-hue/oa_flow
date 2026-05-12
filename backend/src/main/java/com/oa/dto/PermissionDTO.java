@@ -8,5 +8,6 @@ public class PermissionDTO {
     private String code;
     private String name;
     private String description;
+    private String type;
     private Integer status;
 }

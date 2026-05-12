@@ -10,4 +10,5 @@ public class ProcessDefinitionDTO {
     private Integer version;
     private String deploymentId;
     private String description;
+    private Boolean suspended;
 }

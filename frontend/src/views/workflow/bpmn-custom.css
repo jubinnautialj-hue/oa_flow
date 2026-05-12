@@ -1,0 +1,478 @@
+.djs-container {
+  width: 100%;
+  height: 100%;
+}
+
+.djs-root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.djs-overlay-container,
+.djs-viewport {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 0 0;
+}
+
+.djs-container svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.djs-palette {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  z-index: 100;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.djs-palette.open {
+  max-height: 90%;
+  overflow-y: auto;
+}
+
+.djs-palette-entries {
+  padding: 8px;
+}
+
+.djs-palette-entry {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.djs-palette-entry:hover {
+  background-color: #f0f0f0;
+}
+
+.djs-palette-entry .icon {
+  font-size: 24px;
+}
+
+.djs-context-pad {
+  position: absolute;
+  display: none;
+  z-index: 1000;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.djs-context-pad.open {
+  display: block;
+}
+
+.djs-context-pad .entry {
+  display: inline-block;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin: 2px;
+  transition: background 0.2s;
+}
+
+.djs-context-pad .entry:hover {
+  background-color: #e0e0e0;
+}
+
+.bjs-powered-by {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 10;
+  font-size: 10px;
+  color: #999;
+}
+
+.bjs-lasso,
+.bjs-drag-container,
+.bjs-dragging,
+.bjs-drag-new {
+  position: absolute;
+  pointer-events: none;
+}
+
+.djs-lasso {
+  position: absolute;
+  border: 2px dashed #52b415;
+  background: rgba(82, 180, 21, 0.1);
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.djs-dragger {
+  opacity: 0.8;
+}
+
+.djs-hit {
+  cursor: pointer;
+  fill: none;
+  fill-opacity: 0;
+  stroke: white;
+  stroke-opacity: 0;
+  stroke-width: 15px;
+}
+
+.djs-hit-all {
+  cursor: move;
+  stroke-width: 500px;
+}
+
+.djs-outline,
+.djs-selection-outline {
+  pointer-events: none;
+}
+
+.djs-selection-outline {
+  fill: none;
+  stroke: #007cff;
+  stroke-width: 2px;
+}
+
+.djs-multi-shape-selection-outline {
+  fill: rgba(0, 124, 255, 0.05);
+}
+
+.djs-element-selected .djs-visual {
+  stroke: #007cff !important;
+}
+
+.bpmn-shape.djs-element-selected .djs-visual > rect,
+.bpmn-shape.djs-element-selected .djs-visual > circle,
+.bpmn-shape.djs-element-selected .djs-visual > path,
+.bpmn-shape.djs-element-selected .djs-visual > polygon {
+  stroke: #007cff !important;
+}
+
+.bpmn-connection.djs-element-selected .djs-visual > path {
+  stroke: #007cff !important;
+  stroke-width: 2px !important;
+}
+
+.djs-connection .djs-visual {
+  stroke-width: 2px;
+  fill: none;
+}
+
+.bpmn-connection .djs-visual {
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.bpmn-connection .djs-visual path {
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  fill: none;
+  marker-end: url(#sequenceflow-end-white-filled);
+}
+
+.bpmn-connection.conditional-flow .djs-visual path {
+  stroke-dasharray: 1, 6;
+}
+
+.bpmn-connection.default-flow .djs-visual path {
+  stroke-width: 4px;
+}
+
+.bpmn-label {
+  font-size: 11px;
+  font-family: Arial, sans-serif;
+  fill: #444;
+}
+
+.bpmn-label.hidden {
+  display: none;
+}
+
+.bpmn-label.hover,
+.djs-label.hover {
+  cursor: text;
+  fill: #444;
+  stroke: #fff;
+  stroke-width: 2px;
+  stroke-linejoin: round;
+}
+
+.djs-shape,
+.djs-connection {
+  cursor: move;
+  opacity: 1;
+  transition: opacity 0.1s ease-in-out;
+}
+
+.djs-shape:hover,
+.djs-connection:hover {
+  opacity: 0.9;
+}
+
+.bpmn-shape .djs-visual > rect {
+  stroke-width: 2px;
+}
+
+.bpmn-shape .djs-visual > circle {
+  stroke-width: 2px;
+}
+
+.bpmn-shape.event .djs-visual > circle {
+  stroke-width: 2px;
+}
+
+.bpmn-shape.gateway .djs-visual > path {
+  stroke-width: 2px;
+}
+
+.bpmn-shape.task .djs-visual > rect {
+  stroke-width: 2px;
+  rx: 6px;
+}
+
+.djs-minimap {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 180px;
+  height: 120px;
+  border: 1px solid #ccc;
+  background: #fff;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.djs-minimap .viewport {
+  stroke: #007cff;
+  stroke-width: 2px;
+  fill: rgba(0, 124, 255, 0.1);
+}
+
+.bpmn-properties-panel {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  background: #fff;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.bpmn-properties-panel .bio-properties-panel-header {
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 8px;
+}
+
+.bpmn-properties-panel .bio-properties-panel-header-label {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.bpmn-properties-panel .bio-properties-panel-group {
+  margin-bottom: 8px;
+}
+
+.bpmn-properties-panel .bio-properties-panel-group-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.bpmn-properties-panel .bio-properties-panel-group-header:hover {
+  background: #ebebeb;
+}
+
+.bpmn-properties-panel .bio-properties-panel-group-header-icon {
+  margin-right: 8px;
+  transition: transform 0.2s;
+}
+
+.bpmn-properties-panel .bio-properties-panel-group.open .bio-properties-panel-group-header-icon {
+  transform: rotate(90deg);
+}
+
+.bpmn-properties-panel .bio-properties-panel-group-header-title {
+  font-weight: 600;
+  flex: 1;
+}
+
+.bpmn-properties-panel .bio-properties-panel-group-entries {
+  padding: 8px 12px;
+  display: none;
+}
+
+.bpmn-properties-panel .bio-properties-panel-group.open .bio-properties-panel-group-entries {
+  display: block;
+}
+
+.bpmn-properties-panel .bio-properties-panel-entry {
+  margin-bottom: 10px;
+}
+
+.bpmn-properties-panel .bio-properties-panel-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #606060;
+}
+
+.bpmn-properties-panel .bio-properties-panel-input,
+.bpmn-properties-panel .bio-properties-panel-select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #c0c0c0;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.bpmn-properties-panel .bio-properties-panel-input:focus,
+.bpmn-properties-panel .bio-properties-panel-select:focus {
+  outline: none;
+  border-color: #007cff;
+}
+
+.bpmn-properties-panel .bio-properties-panel-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 6px 8px;
+  border: 1px solid #c0c0c0;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: inherit;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.bpmn-properties-panel .bio-properties-panel-textarea:focus {
+  outline: none;
+  border-color: #007cff;
+}
+
+.bpmn-properties-panel .bio-properties-panel-list {
+  width: 100%;
+}
+
+.bpmn-properties-panel .bio-properties-panel-list-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.bpmn-properties-panel .bio-properties-panel-list-button {
+  padding: 4px 12px;
+  border: 1px solid #c0c0c0;
+  border-radius: 3px;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bpmn-properties-panel .bio-properties-panel-list-button:hover {
+  background: #f0f0f0;
+}
+
+.bpmn-properties-panel .bio-properties-panel-list-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  margin-bottom: 4px;
+  background: #fafafa;
+}
+
+.bpmn-properties-panel .bio-properties-panel-list-item.selected {
+  background: #e6f2ff;
+  border-color: #007cff;
+}
+
+.bpmn-properties-panel .bio-properties-panel-list-item-label {
+  flex: 1;
+}
+
+.bpmn-properties-panel .bio-properties-panel-list-item-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.bpmn-properties-panel .bio-properties-panel-list-item-action:hover {
+  color: #007cff;
+}
+
+.bpmn-properties-panel .bio-properties-panel-toggle {
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  background: #ccc;
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bpmn-properties-panel .bio-properties-panel-toggle.checked {
+  background: #007cff;
+}
+
+.bpmn-properties-panel .bio-properties-panel-toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: left 0.2s;
+}
+
+.bpmn-properties-panel .bio-properties-panel-toggle.checked .bio-properties-panel-toggle-slider {
+  left: 18px;
+}
+
+.bpmn-properties-panel .bio-properties-panel-field-error {
+  color: #d0021b;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.bpmn-properties-panel .bio-properties-panel-add-entry {
+  width: 100%;
+  padding: 8px;
+  border: 1px dashed #c0c0c0;
+  border-radius: 3px;
+  background: #fafafa;
+  color: #606060;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bpmn-properties-panel .bio-properties-panel-add-entry:hover {
+  background: #f0f0f0;
+  border-color: #a0a0a0;
+}

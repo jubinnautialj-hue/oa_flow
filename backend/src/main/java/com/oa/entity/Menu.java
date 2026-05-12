@@ -7,24 +7,27 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "sys_permission")
-public class Permission {
+@Table(name = "sys_menu")
+public class Menu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 100)
-    private String code;
-
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(length = 200)
-    private String description;
+    @Column(length = 100)
+    private String path;
 
-    @Column(nullable = false, length = 20)
-    private String type = "FUNCTION";
+    @Column(length = 50)
+    private String icon;
+
+    @Column(nullable = false)
+    private Integer sort = 0;
+
+    @Column(name = "parent_id")
+    private Long parentId;
 
     @Column(nullable = false)
     private Integer status = 1;

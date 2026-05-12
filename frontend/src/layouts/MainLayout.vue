@@ -13,13 +13,28 @@
         background-color="#304156"
         text-color="#bfcbd9"
         active-text-color="#409eff"
+        :unique-opened="true"
       >
-        <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path">
-          <el-icon><component :is="item.icon" /></el-icon>
-          <template #title>
-            <span>{{ item.title }}</span>
-          </template>
-        </el-menu-item>
+        <template v-for="menu in menuTree" :key="menu.id">
+          <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="String(menu.id)">
+            <template #title>
+              <el-icon><component :is="menu.icon || 'Menu'" /></el-icon>
+              <span>{{ menu.name }}</span>
+            </template>
+            <el-menu-item v-for="child in menu.children" :key="child.id" :index="getMenuPath(child)">
+              <el-icon><component :is="child.icon || 'Document'" /></el-icon>
+              <template #title>
+                <span>{{ child.name }}</span>
+              </template>
+            </el-menu-item>
+          </el-sub-menu>
+          <el-menu-item v-else :index="getMenuPath(menu)">
+            <el-icon><component :is="menu.icon || 'Document'" /></el-icon>
+            <template #title>
+              <span>{{ menu.name }}</span>
+            </template>
+          </el-menu-item>
+        </template>
       </el-menu>
     </el-aside>
     <el-container :style="{ marginLeft: sidebarWidth, transition: 'margin-left 0.3s' }">
@@ -60,33 +75,40 @@ import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
+import request from '@/utils/request'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 
 const isCollapsed = ref(false)
+const menuTree = ref([])
 
 const sidebarWidth = computed(() => {
   return isCollapsed.value ? '64px' : '220px'
-})
-
-const menuItems = computed(() => {
-  return route.matched[0]?.children?.filter(
-    item => !item.meta?.hidden
-  ).map(item => ({
-    path: item.path,
-    title: item.meta?.title || item.name,
-    icon: item.meta?.icon || 'Document'
-  })) || []
 })
 
 const currentPageTitle = computed(() => {
   return route.meta?.title || '首页'
 })
 
+const getMenuPath = (menu) => {
+  if (!menu.path) return '/'
+  if (menu.path.startsWith('/')) return menu.path
+  return '/' + menu.path
+}
+
 const toggleSidebar = () => {
   isCollapsed.value = !isCollapsed.value
+}
+
+const loadMenuTree = async () => {
+  try {
+    menuTree.value = await request.get('/menus/tree')
+  } catch (error) {
+    console.error('加载菜单失败:', error)
+    menuTree.value = []
+  }
 }
 
 const handleCommand = async (command) => {
@@ -108,6 +130,9 @@ const handleCommand = async (command) => {
 onMounted(async () => {
   if (authStore.isAuthenticated && !authStore.userInfo.id) {
     await authStore.getCurrentUser()
+  }
+  if (authStore.isAuthenticated) {
+    await loadMenuTree()
   }
 })
 </script>
@@ -148,6 +173,20 @@ onMounted(async () => {
 
 .sidebar-menu {
   border-right: none;
+}
+
+.sidebar-menu :deep(.el-sub-menu__title),
+.sidebar-menu :deep(.el-menu-item) {
+  color: #bfcbd9;
+}
+
+.sidebar-menu :deep(.el-sub-menu__title:hover),
+.sidebar-menu :deep(.el-menu-item:hover) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-menu :deep(.el-sub-menu .el-menu-item) {
+  background-color: #1f2d3d;
 }
 
 .header {

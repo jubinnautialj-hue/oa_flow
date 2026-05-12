@@ -6,6 +6,7 @@ import com.oa.repository.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +21,12 @@ public class PermissionService {
         return permissionRepository.findAll();
     }
 
+    public List<Permission> findByType(String type) {
+        return permissionRepository.findByType(type);
+    }
+
     public List<Permission> search(String keyword) {
-        if (keyword != null && !keyword.isEmpty()) {
+        if (StringUtils.hasText(keyword)) {
             return permissionRepository.search(keyword);
         }
         return permissionRepository.findAll();
@@ -40,7 +45,8 @@ public class PermissionService {
         permission.setCode(dto.getCode());
         permission.setName(dto.getName());
         permission.setDescription(dto.getDescription());
-        permission.setStatus(dto.getStatus());
+        permission.setType(StringUtils.hasText(dto.getType()) ? dto.getType() : "FUNCTION");
+        permission.setStatus(dto.getStatus() != null ? dto.getStatus() : 1);
         return permissionRepository.save(permission);
     }
 
@@ -50,7 +56,12 @@ public class PermissionService {
                 .orElseThrow(() -> new RuntimeException("权限不存在"));
         permission.setName(dto.getName());
         permission.setDescription(dto.getDescription());
-        permission.setStatus(dto.getStatus());
+        if (StringUtils.hasText(dto.getType())) {
+            permission.setType(dto.getType());
+        }
+        if (dto.getStatus() != null) {
+            permission.setStatus(dto.getStatus());
+        }
         return permissionRepository.save(permission);
     }
 

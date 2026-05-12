@@ -7,27 +7,36 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "sys_permission")
-public class Permission {
+@Table(name = "sys_process_button")
+public class ProcessButton {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 100)
-    private String code;
+    @Column(nullable = false, length = 100)
+    private String buttonCode;
 
-    @Column(nullable = false, length = 50)
-    private String name;
+    @Column(nullable = false, length = 100)
+    private String buttonName;
 
-    @Column(length = 200)
+    @Column(length = 500)
     private String description;
 
-    @Column(nullable = false, length = 20)
-    private String type = "FUNCTION";
+    @Column(nullable = false)
+    private Integer sort = 0;
 
     @Column(nullable = false)
     private Integer status = 1;
+
+    @Column(name = "process_definition_key", length = 100)
+    private String processDefinitionKey;
+
+    @Column(name = "task_definition_key", length = 100)
+    private String taskDefinitionKey;
+
+    @Column(name = "button_type", length = 50)
+    private String buttonType;
 
     @Column(name = "create_time")
     private LocalDateTime createTime;

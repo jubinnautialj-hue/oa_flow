@@ -128,4 +128,36 @@ public class ProcessController {
         }
         return ResponseEntity.ok(pd);
     }
+
+    @PostMapping("/definitions/{processDefinitionId}/suspend")
+    public ResponseEntity<?> suspendProcessDefinition(@PathVariable String processDefinitionId) {
+        try {
+            processService.suspendProcessDefinition(processDefinitionId);
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            result.put("message", "流程定义已挂起");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    @PostMapping("/definitions/{processDefinitionId}/activate")
+    public ResponseEntity<?> activateProcessDefinition(@PathVariable String processDefinitionId) {
+        try {
+            processService.activateProcessDefinition(processDefinitionId);
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            result.put("message", "流程定义已激活");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
 }

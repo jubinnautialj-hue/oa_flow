@@ -158,6 +158,95 @@ public class TaskServiceCustom {
         return taskService.getVariables(taskId);
     }
 
+    @Transactional
+    public Map<String, Object> setAssignee(String taskId, String assignee) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (task == null) {
+            throw new RuntimeException("任务不存在");
+        }
+        taskService.setAssignee(taskId, assignee);
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "审核人已变更为: " + assignee);
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Object> delegateTask(String taskId, String assignee) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (task == null) {
+            throw new RuntimeException("任务不存在");
+        }
+        taskService.delegateTask(taskId, assignee);
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "任务已委托给: " + assignee);
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Object> transferTask(String taskId, String assignee) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (task == null) {
+            throw new RuntimeException("任务不存在");
+        }
+        taskService.setOwner(taskId, task.getAssignee());
+        taskService.setAssignee(taskId, assignee);
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "任务已转办给: " + assignee);
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Object> completeTaskByAdmin(String taskId, String comment, String outcome) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (task == null) {
+            throw new RuntimeException("任务不存在");
+        }
+        
+        if (comment != null && !comment.isEmpty()) {
+            taskService.addComment(taskId, task.getProcessInstanceId(), comment);
+        }
+        
+        Map<String, Object> variables = new HashMap<>();
+        if (outcome != null && !outcome.isEmpty()) {
+            variables.put("outcome", outcome);
+            variables.put("approved", "agree".equalsIgnoreCase(outcome));
+        }
+        taskService.complete(taskId, variables);
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "任务已完成");
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Object> rejectTask(String taskId, String comment) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (task == null) {
+            throw new RuntimeException("任务不存在");
+        }
+        
+        if (comment != null && !comment.isEmpty()) {
+            taskService.addComment(taskId, task.getProcessInstanceId(), "驳回: " + comment);
+        }
+        
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("outcome", "reject");
+        variables.put("approved", false);
+        taskService.complete(taskId, variables);
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "任务已驳回");
+        return result;
+    }
+
     private TaskDTO convertToDTO(Task task) {
         TaskDTO dto = new TaskDTO();
         dto.setId(task.getId());
